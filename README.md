@@ -1,6 +1,6 @@
 # TaskFlow by Basil Ugo
 
-![TaskFlow Logo](https://github.com/thebasilugo/taskflow/raw/main/public/taskflow-logo.png)
+<!-- ![TaskFlow Logo](https://github.com/thebasilugo/taskflow/raw/main/public/taskflow-logo.png) -->
 
 ## Overview
 
