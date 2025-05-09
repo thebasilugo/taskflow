@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 		"task management, to-do list, productivity, pomodoro timer, task tracking, Basil Ugo, thebasilugo",
 	authors: [{ name: "Basil Ugo", url: "https://github.com/thebasilugo" }],
 	creator: "Basil Ugo",
-	generator: "thebasilugo.dev",
+	generator: "thebasilugo",
 };
 
 export default function RootLayout({
