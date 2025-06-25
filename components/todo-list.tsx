@@ -9,13 +9,13 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
 import { MoreVertical, Edit, Trash2, Calendar, RepeatIcon } from "lucide-react"
-import TodoDialog from "@/components/todo-dialog"
 import { formatDistanceToNow } from "date-fns"
 
 interface TodoListProps {
   todos: Todo[]
   onUpdateTodo: (todo: Todo) => void
   onDeleteTodo: (todoId: string) => void
+  onEditTodo: (todo: Todo) => void
 }
 
 // Memoized TodoItem component for better performance
@@ -136,10 +136,9 @@ const TodoItem = memo(
 
 TodoItem.displayName = "TodoItem"
 
-export default function TodoList({ todos, onUpdateTodo, onDeleteTodo }: TodoListProps) {
-  const [editingTodo, setEditingTodo] = useState<Todo | null>(null)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+export default function TodoList({ todos, onUpdateTodo, onDeleteTodo, onEditTodo }: TodoListProps) {
   const [mounted, setMounted] = useState(false)
+  const [activeFilter, setActiveFilter] = useState("all")
 
   useEffect(() => {
     setMounted(true)
@@ -149,20 +148,6 @@ export default function TodoList({ todos, onUpdateTodo, onDeleteTodo }: TodoList
   const pendingTodos = todos.filter((todo) => !todo.completed)
   const dailyTodos = todos.filter((todo) => todo.recurrence === RecurrencePattern.Daily)
   const weeklyTodos = todos.filter((todo) => todo.recurrence === RecurrencePattern.Weekly)
-
-  const handleEditTodo = useCallback((todo: Todo) => {
-    setEditingTodo(todo)
-    setIsDialogOpen(true)
-  }, [])
-
-  const handleUpdateTodo = useCallback(
-    (updatedTodo: Todo) => {
-      onUpdateTodo(updatedTodo)
-      setIsDialogOpen(false)
-      setEditingTodo(null)
-    },
-    [onUpdateTodo],
-  )
 
   const handleToggleComplete = useCallback(
     (todo: Todo) => {
@@ -184,14 +169,14 @@ export default function TodoList({ todos, onUpdateTodo, onDeleteTodo }: TodoList
               key={todo.id}
               todo={todo}
               onToggleComplete={handleToggleComplete}
-              onEditTodo={handleEditTodo}
+              onEditTodo={onEditTodo}
               onDeleteTodo={onDeleteTodo}
             />
           ))}
         </div>
       )
     },
-    [handleToggleComplete, handleEditTodo, onDeleteTodo],
+    [handleToggleComplete, onEditTodo, onDeleteTodo],
   )
 
   if (!mounted) {
@@ -217,7 +202,7 @@ export default function TodoList({ todos, onUpdateTodo, onDeleteTodo }: TodoList
         </div>
       </div>
 
-      <Tabs defaultValue="all">
+      <Tabs value={activeFilter} onValueChange={setActiveFilter}>
         <TabsList className="mb-4">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="pending">Pending</TabsTrigger>
@@ -241,16 +226,6 @@ export default function TodoList({ todos, onUpdateTodo, onDeleteTodo }: TodoList
           {renderTodoList(weeklyTodos)}
         </TabsContent>
       </Tabs>
-
-      {editingTodo && (
-        <TodoDialog
-          open={isDialogOpen}
-          onOpenChange={setIsDialogOpen}
-          onAddTodo={handleUpdateTodo}
-          initialData={editingTodo}
-        />
-      )}
     </div>
   )
 }
-

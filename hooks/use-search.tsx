@@ -35,4 +35,3 @@ export function useSearch(tasks: Task[], todos: Todo[]) {
     filteredTodos,
   }
 }
-

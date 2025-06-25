@@ -449,4 +449,3 @@ export default function Analytics({ tasks, todos }: AnalyticsProps) {
     </div>
   )
 }
-

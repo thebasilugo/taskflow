@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { MoreVertical, Edit, Trash2, Clock, CheckCircle2, XCircle, PlayCircle, PauseCircle } from "lucide-react"
-import TaskDialog from "@/components/task-dialog"
 import PomodoroTimer from "@/components/pomodoro-timer"
 import { formatDistanceToNow } from "date-fns"
 
@@ -17,6 +16,7 @@ interface TaskListProps {
   tasks: Task[]
   onUpdateTask: (task: Task) => void
   onDeleteTask: (taskId: string) => void
+  onEditTask: (task: Task) => void
 }
 
 // Memoize individual task card for better performance
@@ -178,11 +178,10 @@ const TaskCard = memo(
 
 TaskCard.displayName = "TaskCard"
 
-export default function TaskList({ tasks, onUpdateTask, onDeleteTask }: TaskListProps) {
-  const [editingTask, setEditingTask] = useState<Task | null>(null)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+export default function TaskList({ tasks, onUpdateTask, onDeleteTask, onEditTask }: TaskListProps) {
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
+  const [activeFilter, setActiveFilter] = useState("all")
 
   useEffect(() => {
     setMounted(true)
@@ -191,20 +190,6 @@ export default function TaskList({ tasks, onUpdateTask, onDeleteTask }: TaskList
   const completedTasks = tasks.filter((task) => task.status === TaskStatus.Completed)
   const inProgressTasks = tasks.filter((task) => task.status === TaskStatus.InProgress)
   const pendingTasks = tasks.filter((task) => task.status === TaskStatus.Pending)
-
-  const handleEditTask = useCallback((task: Task) => {
-    setEditingTask(task)
-    setIsDialogOpen(true)
-  }, [])
-
-  const handleUpdateTask = useCallback(
-    (updatedTask: Task) => {
-      onUpdateTask(updatedTask)
-      setIsDialogOpen(false)
-      setEditingTask(null)
-    },
-    [onUpdateTask],
-  )
 
   const renderTaskList = useCallback(
     (taskList: Task[]) => {
@@ -222,13 +207,13 @@ export default function TaskList({ tasks, onUpdateTask, onDeleteTask }: TaskList
               setActiveTaskId={setActiveTaskId}
               onUpdateTask={onUpdateTask}
               onDeleteTask={onDeleteTask}
-              onEditTask={handleEditTask}
+              onEditTask={onEditTask}
             />
           ))}
         </div>
       )
     },
-    [activeTaskId, onUpdateTask, onDeleteTask, handleEditTask],
+    [activeTaskId, onUpdateTask, onDeleteTask, onEditTask],
   )
 
   if (!mounted) {
@@ -257,7 +242,7 @@ export default function TaskList({ tasks, onUpdateTask, onDeleteTask }: TaskList
         </div>
       </div>
 
-      <Tabs defaultValue="all">
+      <Tabs value={activeFilter} onValueChange={setActiveFilter}>
         <TabsList className="mb-4">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="pending">Pending</TabsTrigger>
@@ -277,16 +262,6 @@ export default function TaskList({ tasks, onUpdateTask, onDeleteTask }: TaskList
           {renderTaskList(completedTasks)}
         </TabsContent>
       </Tabs>
-
-      {editingTask && (
-        <TaskDialog
-          open={isDialogOpen}
-          onOpenChange={setIsDialogOpen}
-          onAddTask={handleUpdateTask}
-          initialData={editingTask}
-        />
-      )}
     </div>
   )
 }
-

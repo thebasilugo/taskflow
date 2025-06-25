@@ -29,4 +29,3 @@ export interface Todo {
   recurrence: RecurrencePattern | null
   createdAt: string
 }
-

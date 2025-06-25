@@ -142,4 +142,3 @@ export default function TodoDialog({ open, onOpenChange, onAddTodo, initialData 
     </Dialog>
   )
 }
-

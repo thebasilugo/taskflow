@@ -9,4 +9,3 @@ export default function robots(): MetadataRoute.Robots {
     sitemap: "https://taskflow-thebasilugo.vercel.app/sitemap.xml",
   }
 }
-

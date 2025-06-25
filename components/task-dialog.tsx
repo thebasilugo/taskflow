@@ -135,4 +135,3 @@ export default function TaskDialog({ open, onOpenChange, onAddTask, initialData 
     </Dialog>
   )
 }
-
